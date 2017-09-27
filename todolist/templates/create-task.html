@@ -1,0 +1,38 @@
+{% extends 'tasks.html' %}
+{% block content %}
+
+    <form method="POST" action="/create/" class="form-horizontal" onsubmit="validTask()">
+        {% csrf_token %}
+        <div class="col-md-6">
+            <div>
+                <input placeholder="Title" type="text" name="title" id="title" class="form-control" maxlength="255">
+            </div>
+            <br/>
+            <div>
+              <select id="label" name="label" class="form-control">
+                    <option value="1">Urgent</option>
+                    <option value="2">Medium</option>
+                    <option value="3">Light</option>
+              </select>
+            </div>
+            <br/>
+            <div>
+                <input placeholder="Description" type="text" name="description" id="description" class="form-control">
+            </div>
+            <br />
+            <div align="right">
+                <button class="btn btn-success" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+    function validTask(){
+    if(document.getElementById("title").value ==""){
+        alert("Fill the Title");
+        return false;
+        }
+    }
+    </script>
+
+{% endblock %}
