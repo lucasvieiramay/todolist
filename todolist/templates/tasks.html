@@ -65,7 +65,6 @@
                             <div class="content table-responsive table-full-width">
                                 <table class="table table-hover table-striped">
                                     <form method="POST" action="/create/" onsubmit="validTask()">
-                                        {% csrf_token %}
                                         <thead>
                                             <tr>
                                                 <td>
@@ -85,6 +84,7 @@
                                         {% if tasks %}
                                             {% for task in tasks %}
                                                 <tr>
+                                                    <td onclick="completeTask({{task.pk}})"><i class="fa fa-check" aria-hidden="true"></i></td>
                                                     <td>{{task.title}}</td>
                                                     <td>{{task.label}}</td>
                                                 </tr>
@@ -96,10 +96,6 @@
                                                 <br/>
                                                 <br/>
                                                 <br/>
-                                                <form method="POST" action="/create/" class="form-horizontal" onsubmit="validTask()">
-                                                    <input class="form-control" maxlength="255" type="text" id="inputTask" placeholder="Type your task here...">
-                                                    <span onclick="newElement()" class="addBtn">Add</span>
-                                                </form>
                                             </div>
                                         {% endif %}
                                     </tbody>
@@ -130,11 +126,26 @@
     <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
     <script src="{% static "js/light-bootstrap-dashboard.js" %}"></script>
     <script type="text/javascript">
+
         function validTask(){
         if(document.getElementById("title").value ==""){
             alert("Fill the Title");
             return false;
             }
+        }
+
+        function completeTask(taskId){
+            // Send a POST with the taskId to the backend to mark the task as completed
+            $.post(
+                "/complete-task/",
+                {
+                task_id: taskId},
+                function(data) {
+                    // Hard reload
+                    // TODO: Make a Soft reload here
+                    location.reload();
+                }
+            );
         }
     </script>
 </html>
