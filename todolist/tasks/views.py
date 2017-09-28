@@ -45,10 +45,8 @@ def update_task(request):
 
     task_id = request.POST.get('task_id')
     title = request.POST.get('title')
-    Tasks.objects.filter(pk=task_id).update(
-        title=title
-    )
-    return HttpResponse()
+    Tasks.objects.filter(pk=task_id).update(title=title)
+    return redirect('home')
 
 
 @csrf_exempt

@@ -71,11 +71,17 @@
                                                     <input class="form-control" maxlength="255" type="text" name="title" id="title" placeholder="Type your task here...">
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <button class="btn btn-success" type="submit">Add Task</button>
+                                                    <select id="" name="label" id="label" class="form-control">
+                                                        <option value="1"> Urgent </option>
+                                                        <option value="2"> Medium </option>
+                                                        <option value="3"> Light </option>
+                                                    </select>
                                                 </div>
+
                                                 <div class="col-md-2">
                                                     <button class="btn btn-success" type="submit">Add Task</button>
                                                 </div>
+
                                                 <div class="col-md-3" style="margin-top:10px;">
                                                     <input
                                                         onclick="showArchivedTasks()"
@@ -94,13 +100,22 @@
                                     <tbody>
                                         {% if tasks %}
                                             {% for task in tasks %}
-                                                <tr>
+                                                <tr class="segmentListItem" draggable="true">
                                                     <td class="col-md-1" onclick="completeTask({{task.pk}})" data-toggle="tooltip" title="Mark as Done">
                                                         <div style="cursor:pointer;">
                                                             <i style="color: green;" class="fa fa-check" aria-hidden="true"></i>
                                                         </div>
                                                     </td>
-                                                    <td class="col-md-8" data-toggle="tooltip" title="Title">{{task.title}}</td>
+                                                        <td onclick="openModal(
+                                                                {{task.id}}, '{{task.title}}'
+                                                            )"
+                                                            class="col-md-8"
+                                                            data-toggle="tooltip"
+                                                            title="Title">
+                                                            <div style="cursor:pointer;">
+                                                                {{task.title}}
+                                                            </div>
+                                                        </td>
                                                     {% if task.label == 1 %}
                                                         <td class="col-md-1" data-toggle="tooltip" title="Priority">
                                                             <i style="color: red;" class="fa fa-flag" aria-hidden="true"></i>
@@ -151,8 +166,34 @@
     </div>
 </div>
 
+<!-- Modal to Update Taks-->
+<div class="modal fade" id="updateModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="form-group">
+                    <input class="form-control" maxlength="255" type="text" name="updatedTitle" id="updatedTitle" placeholder="Type the new task here...">
+                    <input style="display:none;" id="taskId">
+                </div>
+                <div class="form-group">
+                    <select id="" name="updatedLabel" id="updatedLabel" class="form-control">
+                        <option value="1"> Urgent </option>
+                        <option value="2"> Medium </option>
+                        <option value="3"> Light </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success pull-right" onclick="updateTask()">Update Task</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
+
+
 
     <!--   Core JS Files   -->
     <script src="{% static "js/jquery-1.10.2.js" %}" type="text/javascript"></script>
@@ -166,7 +207,33 @@
 
     <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
     <script src="{% static "js/light-bootstrap-dashboard.js" %}"></script>
+
     <script type="text/javascript">
+
+        function openModal(taskId, taskTitle, taskLabel){
+            $('#updateTitle').val(taskTitle);
+            $('#updateLabel').val(taskLabel);
+            $('#taskId').val(taskId);
+            $('#updateModal').modal('toggle');
+
+        }
+        function updateTask(){
+            var title = document.getElementById('updatedTitle').value;
+            var taskId = document.getElementById('taskId').value;
+            $('#updateModal').modal('hide');
+            $.post(
+                "/update-task/",
+                {
+                    task_id: taskId,
+                    title: title,
+                },
+                function(data) {
+                    // Hard reload
+                    // TODO: Make a Soft reload here
+                    location.reload();
+                }
+            );
+        }
 
         function validTask(){
         if(document.getElementById("title").value ==""){
@@ -217,5 +284,45 @@
             window.location.replace("/?showArchived=True");
         }
 
+        $(document).ready(function(){
+            var draggedItem = null;
+            addEvents();
+
+            function addEvents(){
+                $('.segmentListItem').each(function(index){
+                    $(this)[0].addEventListener('dragstart',handleDragStart,false);
+                    $(this)[0].addEventListener('drop',handleDrop,false);
+                    $(this)[0].addEventListener('dragover',handleDragOver,false);
+                });
+                }
+            function handleDragStart(e){
+                //console.log('start');
+                draggedItem = this;
+                e.dataTransfer.effectAllowed = 'move';
+                //e.dataTransfer.dropEffect = 'move'; //MH - do we need both of these?
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            }
+
+            function handleDragOver(e) {
+                  if (e.preventDefault) {
+                    e.preventDefault(); // Necessary. Allows us to drop.
+                  }
+                  e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+                  return false;
+            }
+
+            function handleDrop(e){
+                if (e.stopPropagation) {
+                    e.stopPropagation(); // Stops some browsers from redirecting.
+                }
+
+                if (draggedItem != this) { //MH - swap if we're not dragging the item onto itself
+                    $(this).replaceWith($(draggedItem).clone(true,true));
+                    $(draggedItem).replaceWith($(this).clone(true,true));
+                    addEvents();
+                }
+                return false;
+            }
+        });
     </script>
 </html>
