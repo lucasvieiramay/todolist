@@ -64,14 +64,31 @@
                         <div class="card">
                             <div class="content table-responsive table-full-width">
                                 <table class="table table-hover table-striped">
+                                    <form method="POST" action="/create/" onsubmit="validTask()">
+                                        {% csrf_token %}
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    <div style="float:left;">
+                                                        <div class="col-md-8">
+                                                            <input class="form-control" maxlength="255" type="text" name="title" id="title" placeholder="Type your task here...">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button class="btn btn-success" type="submit">Add Task</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </form>
                                     <tbody>
                                         {% if tasks %}
-                                        {% for task in tasks %}
-                                            <tr>
-                                                <td>{{task.title}}</td>
-                                                <td>{{task.label}}</td>
-                                            </tr>
-                                        {% endfor %}
+                                            {% for task in tasks %}
+                                                <tr>
+                                                    <td>{{task.title}}</td>
+                                                    <td>{{task.label}}</td>
+                                                </tr>
+                                            {% endfor %}
                                         {% else %}
                                             <div style="text-align: center;">
                                                 <p> Enjoy your free day, you don't have any task =) </p>
@@ -79,8 +96,9 @@
                                                 <br/>
                                                 <br/>
                                                 <br/>
-                                                <form action="/create/">
-                                                    <input type="submit" class="btn btn-info" value="Or click here and add a taks"/>
+                                                <form method="POST" action="/create/" class="form-horizontal" onsubmit="validTask()">
+                                                    <input class="form-control" maxlength="255" type="text" id="inputTask" placeholder="Type your task here...">
+                                                    <span onclick="newElement()" class="addBtn">Add</span>
                                                 </form>
                                             </div>
                                         {% endif %}
@@ -111,4 +129,12 @@
 
     <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
     <script src="{% static "js/light-bootstrap-dashboard.js" %}"></script>
+    <script type="text/javascript">
+        function validTask(){
+        if(document.getElementById("title").value ==""){
+            alert("Fill the Title");
+            return false;
+            }
+        }
+    </script>
 </html>

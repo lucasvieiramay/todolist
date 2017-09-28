@@ -5,7 +5,6 @@ from tasks.models import Tasks
 
 
 def list_tasks(request):
-
     all_tasks = Tasks.objects.filter(
         completed=False, archived=False).order_by('label')
     data_to_render = {
@@ -17,7 +16,6 @@ def list_tasks(request):
 
 
 def create_tasks(request):
-
     if request.POST:
         title = request.POST.get('title')
         label = request.POST.get('label')
@@ -28,3 +26,13 @@ def create_tasks(request):
 
     return render(
         request, 'create-task.html')
+
+
+def update_task(request):
+    if request.POST:
+        task_id = request.POST.get('task_id')
+        title = request.POST.get('title')
+        Tasks.objects.filter(pk=task_id).update(
+            title=title
+        )
+        return redirect('/')
