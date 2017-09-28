@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.list_tasks, name='home'),
     url(r'^create/', views.create_tasks, name='create_task'),
-    url(r'^update/', views.update_task, name='update_task'),
+    url(r'^update-task/', views.update_task, name='update_task'),
     url(r'^complete-task/', views.complete_task, name='complete_task'),
+    url(r'^delete-task/', views.delete_task, name='delete_task'),
+    url(r'^archive-task/', views.archive_task, name='archive_task'),
 ]

@@ -64,29 +64,70 @@
                         <div class="card">
                             <div class="content table-responsive table-full-width">
                                 <table class="table table-hover table-striped">
-                                    <form method="POST" action="/create/" onsubmit="validTask()">
+                                    <form method="POST" action="/create/" onsubmit="return validTask()">
                                         <thead>
                                             <tr>
-                                                <td>
-                                                    <div style="float:left;">
-                                                        <div class="col-md-8">
-                                                            <input class="form-control" maxlength="255" type="text" name="title" id="title" placeholder="Type your task here...">
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <button class="btn btn-success" type="submit">Add Task</button>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                                <div class="col-md-5">
+                                                    <input class="form-control" maxlength="255" type="text" name="title" id="title" placeholder="Type your task here...">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button class="btn btn-success" type="submit">Add Task</button>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button class="btn btn-success" type="submit">Add Task</button>
+                                                </div>
+                                                <div class="col-md-3" style="margin-top:10px;">
+                                                    <input
+                                                        onclick="showArchivedTasks()"
+                                                        type="checkbox"
+                                                        name="show_archived"
+                                                        id="show_archived">
+                                                            Show archived tasks
+                                                    </input>
+                                                </div>
                                             </tr>
+                                            <br/>
+                                            <br/>
+                                            <br/>
                                         </thead>
                                     </form>
                                     <tbody>
                                         {% if tasks %}
                                             {% for task in tasks %}
                                                 <tr>
-                                                    <td onclick="completeTask({{task.pk}})"><i class="fa fa-check" aria-hidden="true"></i></td>
-                                                    <td>{{task.title}}</td>
-                                                    <td>{{task.label}}</td>
+                                                    <td class="col-md-1" onclick="completeTask({{task.pk}})" data-toggle="tooltip" title="Mark as Done">
+                                                        <div style="cursor:pointer;">
+                                                            <i style="color: green;" class="fa fa-check" aria-hidden="true"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="col-md-8" data-toggle="tooltip" title="Title">{{task.title}}</td>
+                                                    {% if task.label == 1 %}
+                                                        <td class="col-md-1" data-toggle="tooltip" title="Priority">
+                                                            <i style="color: red;" class="fa fa-flag" aria-hidden="true"></i>
+                                                        </td>
+                                                    {% elif task.label == 2 %}
+                                                        <td class="col-md-1" data-toggle="tooltip" title="Priority">
+                                                            <i style="color: orange;" class="fa fa-flag" aria-hidden="true"></i>
+                                                        </td>
+                                                    {% else %}
+                                                        <td class="col-md-1" data-toggle="tooltip" title="Priority">
+                                                            <i style="color: green;" class="fa fa-flag" aria-hidden="true"></i>
+                                                        </td>
+                                                    {% endif %}
+                                                    <td class="col-md-1" onclick="archiveTask({{task.pk}})" data-toggle="tooltip" title="Archive">
+                                                        <div style="cursor:pointer;">
+                                                            {% if task.archived %}
+                                                                <i style="color: orange;" class="fa fa-archive" aria-hidden="true"></i>
+                                                            {% else %}
+                                                                <i style="color: #dddddd;" class="fa fa-archive" aria-hidden="true"></i>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td class="col-md-1" onclick="deleteTask({{task.pk}})" data-toggle="tooltip" title="Delete">
+                                                        <div style="cursor:pointer;">
+                                                            <i style="color: red;" class="fa fa-trash" aria-hidden="true"></i>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         {% else %}
@@ -135,9 +176,22 @@
         }
 
         function completeTask(taskId){
-            // Send a POST with the taskId to the backend to mark the task as completed
             $.post(
                 "/complete-task/",
+                {
+                    task_id: taskId
+                },
+                function(data) {
+                    // Hard reload
+                    // TODO: Make a Soft reload here
+                    location.reload();
+                }
+            );
+        }
+
+        function deleteTask(taskId){
+            $.post(
+                "/delete-task/",
                 {
                 task_id: taskId},
                 function(data) {
@@ -147,5 +201,21 @@
                 }
             );
         }
+
+        function archiveTask(taskId){
+            $.post(
+                "/archive-task/",
+                {
+                task_id: taskId},
+                function(data) {
+                    window.location.replace("/");
+                }
+            );
+        }
+
+        function showArchivedTasks(){
+            window.location.replace("/?showArchived=True");
+        }
+
     </script>
 </html>

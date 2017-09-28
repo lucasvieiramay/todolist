@@ -36,7 +36,7 @@ class Tasks(BaseModel):
         default=None, null=True, blank=True)
     # To make it easier to understand and maintain I always use enums!
     label = models.PositiveSmallIntegerField(
-        null=True, choices=LABEL_CHOICES, default=MEDIUM)
+        default=MEDIUM, choices=LABEL_CHOICES)
     # This will work like a SoftDelete
     archived = models.BooleanField(default=False)
 
