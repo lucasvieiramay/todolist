@@ -300,16 +300,14 @@
                 });
                 }
             function handleDragStart(e){
-                //console.log('start');
                 draggedItem = this;
                 e.dataTransfer.effectAllowed = 'move';
-                //e.dataTransfer.dropEffect = 'move'; //MH - do we need both of these?
                 e.dataTransfer.setData('text/html', this.innerHTML);
             }
 
             function handleDragOver(e) {
                   if (e.preventDefault) {
-                    e.preventDefault(); // Necessary. Allows us to drop.
+                    e.preventDefault(); // Allows us to drop.
                   }
                   e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
                   return false;
@@ -320,7 +318,7 @@
                     e.stopPropagation(); // Stops some browsers from redirecting.
                 }
 
-                if (draggedItem != this) { //MH - swap if we're not dragging the item onto itself
+                if (draggedItem != this) { // Swap if we're not dragging the item onto itself
                     $(this).replaceWith($(draggedItem).clone(true,true));
                     $(draggedItem).replaceWith($(this).clone(true,true));
                     addEvents();
