@@ -27,8 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# If you run on another port or domain, you Need change this
-DOMAIN_URL = 'localhost.com:8000'
 
 # Application definition
 
