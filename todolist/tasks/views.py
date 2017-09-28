@@ -9,10 +9,14 @@ from tasks.models import Tasks
 @csrf_exempt
 def list_tasks(request):
     show_archived = request.GET.get('showArchived', False)
+    finished_tasks = request.GET.get('finished', False)
 
     if show_archived:
         all_tasks = Tasks.objects.filter(
             completed=False).order_by('label')
+    elif finished_tasks:
+        all_tasks = Tasks.objects.filter(
+            completed=True)
     else:
         all_tasks = Tasks.objects.filter(
             completed=False, archived=show_archived).order_by('label')
